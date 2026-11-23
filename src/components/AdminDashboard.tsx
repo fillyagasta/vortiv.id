@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { Product, ProductDraft } from '../types';\nimport type { FormEvent } from 'react';
+import type { Product, ProductDraft } from '../types';
+import type { FormEvent } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 type Props = { client: SupabaseClient; onClose: () => void; onProductsChanged: () => void };
