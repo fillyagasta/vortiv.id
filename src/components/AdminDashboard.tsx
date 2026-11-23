@@ -69,7 +69,7 @@ export default function AdminDashboard({ client, onClose, onProductsChanged }: P
     setBusy(false);
   }
 
-  async function saveProduct(e:React.FormEvent) {
+  async function saveProduct(e:FormEvent) {
     e.preventDefault(); setBusy(true); setNotice('');
     const payload={name:draft.name.trim(),price:Number(draft.price),category:draft.category,colors:draft.colors, image:draft.image,description:draft.description.trim(),tag:draft.tag||null,active:draft.active!==false,slug:draft.name.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')};
     const result=editing?await client.from('products').update(payload).eq('id',editing):await client.from('products').insert(payload);
@@ -85,7 +85,7 @@ export default function AdminDashboard({ client, onClose, onProductsChanged }: P
     setBusy(false);
   }
 
-  async function addCategory(e:React.FormEvent) {
+  async function addCategory(e:FormEvent) {
     e.preventDefault(); const name=newCategory.trim(); if(!name)return;
     setBusy(true);
     const slug=name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
