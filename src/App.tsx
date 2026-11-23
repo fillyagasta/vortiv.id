@@ -22,8 +22,6 @@ const socials=[
  {label:'TikTok',url:'https://www.tiktok.com/@vrtv.id',icon:<TikTok/>},
 ];
 function TikTok(){return <svg viewBox="0 0 24 24" className="w-[17px] h-[17px]" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.25 8.25 0 0 0 4.83 1.56V6.79a4.85 4.85 0 0 1-1.06-.1z"/></svg>}
-function XBrand(){return <svg viewBox="0 0 24 24" className="w-[17px] h-[17px]" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>}
-
 function ProductCard({p,onAdd,onView,isSaved,onSave}:{p:Product;onAdd:(p:Product,c:string)=>void;onView:(p:Product)=>void;isSaved:boolean;onSave:(id:number)=>void}){
  const [color,setColor]=useState(p.colors[0]);
  return <article className="group">
@@ -53,7 +51,7 @@ export default function App(){
  const [email,setEmail]=useState('');
  const [newsletterMsg,setNewsletterMsg]=useState('');
  const [toast,setToast]=useState('');\n const priceText=(n:number)=>currency==='IDR'?new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n*rate):money(n);
- useEffect(()=>{try{setCart(JSON.parse(localStorage.getItem('vortiv-cart')||'[]'));setSaved(JSON.parse(localStorage.getItem('vortiv-wishlist')||'[]'));setAccountEmail(localStorage.getItem('vortiv-profile')||'')}catch{}finally{setStorageLoaded(true)}},[]);
+ useEffect(()=>{try{setCart((JSON.parse(localStorage.getItem('vortiv-cart')||'[]') as CartLine[]).map(l=>({...l,productId:String(l.productId).startsWith('sample-')?String(l.productId):'sample-'+l.productId})));setSaved(JSON.parse(localStorage.getItem('vortiv-wishlist')||'[]'));setAccountEmail(localStorage.getItem('vortiv-profile')||'')}catch{}finally{setStorageLoaded(true)}},[]);
  useEffect(()=>{if(storageLoaded)localStorage.setItem('vortiv-cart',JSON.stringify(cart))},[cart,storageLoaded]);
  useEffect(()=>{if(storageLoaded)localStorage.setItem('vortiv-wishlist',JSON.stringify(saved))},[saved,storageLoaded]);
  useEffect(()=>{if(accountEmail)localStorage.setItem('vortiv-profile',accountEmail)},[accountEmail]);\n useEffect(()=>{localStorage.setItem('vortiv-currency',currency)},[currency]);\n useEffect(()=>{fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=IDR').then(r=>r.json()).then(d=>{if(d.rates?.IDR){setRate(d.rates.IDR);setRateDate(d.date||'live')}}).catch(()=>setRateDate('fallback'))},[]);\n useEffect(()=>{if(!supabase)return;supabase.from('products').select('*').eq('active',true).order('created_at',{ascending:false}).then(({data,error})=>{if(!error&&data)setProducts(data as Product[])})},[]);
