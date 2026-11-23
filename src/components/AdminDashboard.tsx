@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { Product, ProductDraft } from '../types';
+import type { Product, ProductDraft } from '../types';\nimport type { FormEvent } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 type Props = { client: SupabaseClient; onClose: () => void; onProductsChanged: () => void };
@@ -41,7 +41,7 @@ export default function AdminDashboard({ client, onClose, onProductsChanged }: P
     setBusy(false);
   }
 
-  async function signIn(e:React.FormEvent) {
+  async function signIn(e:FormEvent) {
     e.preventDefault(); setBusy(true); setNotice('');
     const {data,error} = await client.auth.signInWithPassword({email,password});
     if(error) setNotice('Login gagal. Periksa email/password.'); 
