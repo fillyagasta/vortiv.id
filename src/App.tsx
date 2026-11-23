@@ -26,7 +26,7 @@ function ProductCard({p,onAdd,onView,isSaved,onSave}:{p:Product;onAdd:(p:Product
  const [color,setColor]=useState(p.colors[0]);
  return <article className="group">
   <div className="relative aspect-[4/5] overflow-hidden bg-[#151515]">
-   <button onClick={()=>onView(p)} className="absolute inset-0 w-full h-full" aria-label={'View '+p.name}><img src={p.image} alt={p.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"/></button>
+   <button onClick={()=>onView(p)} className="absolute inset-0 w-full h-full" aria-label={'View '+p.name}><img src={p.image} alt={p.name} loading="lazy" onError={e=>{e.currentTarget.src='https://images.pexels.com/photos/37305153/pexels-photo-37305153.jpeg?auto=compress&cs=tinysrgb&w=900'}} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"/></button>
    {p.tag&&<span className="absolute left-3 top-3 bg-white text-black px-2 py-1 text-[10px] font-bold tracking-widest">{p.tag}</span>}
    <button onClick={()=>onSave(p.id)} aria-label="Wishlist" className="absolute right-3 top-3 bg-black/70 p-2 rounded-full"><Heart size={16} className={isSaved?'fill-white':'text-white'}/></button>
    <button onClick={()=>onAdd(p,color)} className="absolute bottom-3 left-3 right-3 bg-white text-black py-3 text-xs font-bold tracking-widest opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">QUICK ADD · {color.toUpperCase()}</button>
@@ -63,7 +63,7 @@ export default function App(){
  useEffect(()=>{if(accountEmail)localStorage.setItem('vortiv-profile',accountEmail)},[accountEmail]);
  useEffect(()=>{if(storageLoaded)localStorage.setItem('vortiv-currency',currency)},[currency,storageLoaded]);
  useEffect(()=>{fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=IDR').then(r=>r.json()).then(d=>{if(d.rates?.IDR){setRate(d.rates.IDR);setRateDate(d.date||'live')}}).catch(()=>setRateDate('fallback'))},[]);
- useEffect(()=>{if(!supabase)return;supabase.from('products').select('*').eq('active',true).order('created_at',{ascending:false}).then(({data,error})=>{if(!error&&data){setProducts(data as Product[]);setCart(prev=>prev.map(line=>{const match=line.productId.match(/^sample-(\d+)$/);const oldProduct=match?seedProducts[Number(match[1])-1]:undefined;const actual=oldProduct?data.find(p=>p.name===oldProduct.name):undefined;return actual?{...line,productId:actual.id}:line;}));setSaved(prev=>prev.map(id=>{const oldProduct=seedProducts.find(p=>p.id===id);const actual=oldProduct?data.find(p=>p.name===oldProduct.name):undefined;return actual?.id||id;}))}})},[]);
+ useEffect(()=>{if(!supabase||!storageLoaded)return;supabase.from('products').select('*').eq('active',true).order('created_at',{ascending:false}).then(({data,error})=>{if(!error&&data){setProducts(data as Product[]);setCart(prev=>prev.map(line=>{const match=line.productId.match(/^sample-(\d+)$/);const oldProduct=match?seedProducts[Number(match[1])-1]:undefined;const actual=oldProduct?data.find(p=>p.name===oldProduct.name):undefined;return actual?{...line,productId:actual.id}:line;}));setSaved(prev=>prev.map(id=>{const oldProduct=seedProducts.find(p=>p.id===id);const actual=oldProduct?data.find(p=>p.name===oldProduct.name):undefined;return actual?.id||id;}))}})},[]);
  const count=cart.reduce((s,l)=>s+l.quantity,0);
  const subtotal=cart.reduce((s,l)=>s+(products.find(p=>p.id===l.productId)?.price||0)*l.quantity,0);
  const visible=useMemo(()=>products.filter(p=>(category==='All'||p.category===category)&&(!search||p.name.toLowerCase().includes(search.toLowerCase())||p.category.toLowerCase().includes(search.toLowerCase()))),[category,search]);
@@ -75,7 +75,7 @@ export default function App(){
  function orderText(){return ['VORTIV.ID ORDER',...cart.map(l=>{const p=products.find(x=>x.id===l.productId)!;return l.quantity+' × '+p.name+' / '+l.color+' — '+priceText(p.price*l.quantity)}),'Subtotal: '+priceText(subtotal),'Shipping and payment to be confirmed.'].join('\n')}
  async function copyOrder(){try{await navigator.clipboard.writeText(orderText());notify('Order summary copied')}catch{notify('Clipboard unavailable. Please copy order details manually.')}}
  return <div className="min-h-screen bg-black text-white font-sans">
-  <div className="bg-white text-black text-center py-2 px-3 text-[10px] sm:text-xs tracking-widest font-medium">FREE SHIPPING ON ORDERS OVER $150 — USE CODE: VORTIV15 FOR 15% OFF</div>
+  <div className="bg-white text-black text-center py-2 px-3 text-[10px] sm:text-xs tracking-widest font-medium">FREE SHIPPING ON ORDERS OVER {priceText(150)} — USE CODE: VORTIV15 FOR 15% OFF</div>
   <nav className="sticky top-0 z-40 bg-black/95 backdrop-blur border-b border-white/10 flex justify-between items-center px-5 md:px-10 py-4">
    <a href="#top" className="font-bold text-lg tracking-tight">vortiv.id</a>
    <div className="hidden md:flex gap-7 text-sm text-gray-300"><button onClick={()=>go('shop')}>Shop</button><button onClick={()=>go('new-arrivals')}>New Arrivals</button><button onClick={()=>go('best-sellers')}>Best Sellers</button><button onClick={()=>go('about')}>About Us</button></div>
