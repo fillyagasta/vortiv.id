@@ -29,6 +29,18 @@ create table if not exists public.products (
 );
 
 create index if not exists products_active_category_idx on public.products(active, category);
+insert into public.products(name,slug,price,category,colors,image,description,tag,active)
+values
+('VORTEX TEE','vortex-tee',49,'T-Shirts',array['White','Black'],'https://images.pexels.com/photos/37305162/pexels-photo-37305162.jpeg?auto=compress&cs=tinysrgb&w=900','Everyday essential with a relaxed streetwear fit.','NEW',true),
+('MOTION TEE','motion-tee',49,'T-Shirts',array['White','Black'],'https://images.pexels.com/photos/33671485/pexels-photo-33671485.jpeg?auto=compress&cs=tinysrgb&w=900','Made for movement. Minimal look, easy to style.',null,true),
+('ORBIT HOODIE','orbit-hoodie',89,'Hoodies',array['White','Black'],'https://images.pexels.com/photos/37305153/pexels-photo-37305153.jpeg?auto=compress&cs=tinysrgb&w=900','A heavyweight layer for cooler days and late nights.','NEW',true),
+('CORE HOODIE','core-hoodie',89,'Hoodies',array['White','Black'],'https://images.pexels.com/photos/37305165/pexels-photo-37305165.jpeg?auto=compress&cs=tinysrgb&w=900','A core piece with a relaxed silhouette.',null,true),
+('GLOBAL TEE','global-tee',49,'T-Shirts',array['White','Black'],'https://images.pexels.com/photos/37305289/pexels-photo-37305289.jpeg?auto=compress&cs=tinysrgb&w=900','A versatile staple for your daily rotation.','BEST SELLER',true),
+('SIGNATURE TEE','signature-tee',45,'T-Shirts',array['White','Black'],'https://images.pexels.com/photos/37305162/pexels-photo-37305162.jpeg?auto=compress&cs=tinysrgb&w=900','A signature fit that goes with everything.','BEST SELLER',true),
+('STAR HOODIE','star-hoodie',89,'Hoodies',array['White','Black'],'https://images.pexels.com/photos/37305153/pexels-photo-37305153.jpeg?auto=compress&cs=tinysrgb&w=900','A standout layer with an everyday fit.','BEST SELLER',true),
+('NULL TEE','null-tee',49,'T-Shirts',array['White','Black'],'https://images.pexels.com/photos/37305165/pexels-photo-37305165.jpeg?auto=compress&cs=tinysrgb&w=900','A minimal blank canvas for your outfit.',null,true)
+on conflict (slug) do nothing;
+
 create index if not exists products_created_at_idx on public.products(created_at desc);
 
 grant select on public.products, public.categories to anon, authenticated;
