@@ -57,7 +57,7 @@ export default function App(){
  const [newsletterMsg,setNewsletterMsg]=useState('');
  const [toast,setToast]=useState('');
  const priceText=(n:number)=>currency==='IDR'?new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n*rate):money(n);
- useEffect(()=>{try{setCart((JSON.parse(localStorage.getItem('vortiv-cart')||'[]') as CartLine[]).map(l=>({...l,productId:/^\\d+$/.test(String(l.productId))?'sample-'+l.productId:String(l.productId)})));setSaved(JSON.parse(localStorage.getItem('vortiv-wishlist')||'[]'));setAccountEmail(localStorage.getItem('vortiv-profile')||'')}catch{}finally{setStorageLoaded(true)}},[]);
+ useEffect(()=>{try{setCart((JSON.parse(localStorage.getItem('vortiv-cart')||'[]') as CartLine[]).map(l=>({...l,productId:/^\\d+$/.test(String(l.productId))?'sample-'+l.productId:String(l.productId)})));setSaved(JSON.parse(localStorage.getItem('vortiv-wishlist')||'[]'));setAccountEmail(localStorage.getItem('vortiv-profile')||'');setCurrency((localStorage.getItem('vortiv-currency') as 'USD'|'IDR')||'USD')}catch{}finally{setStorageLoaded(true)}},[]);
  useEffect(()=>{if(storageLoaded)localStorage.setItem('vortiv-cart',JSON.stringify(cart))},[cart,storageLoaded]);
  useEffect(()=>{if(storageLoaded)localStorage.setItem('vortiv-wishlist',JSON.stringify(saved))},[saved,storageLoaded]);
  useEffect(()=>{if(accountEmail)localStorage.setItem('vortiv-profile',accountEmail)},[accountEmail]);
