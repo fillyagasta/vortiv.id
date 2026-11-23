@@ -176,7 +176,7 @@ export default function App() {
       <section className="relative min-h-[90vh] bg-black overflow-hidden flex items-center">
         <div className="absolute inset-0">
           <img
-            src="/1779349938873_0.webp"
+            src="https://images.pexels.com/photos/2220316/pexels-photo-2220316.jpeg?auto=compress&cs=tinysrgb&w=1600"
             alt="Vortiv hero"
             className="w-full h-full object-cover object-center opacity-80"
           />
