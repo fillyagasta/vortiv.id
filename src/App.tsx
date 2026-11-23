@@ -38,7 +38,8 @@ function ProductCard({p,onAdd,onView,isSaved,onSave}:{p:Product;onAdd:(p:Product
 }
 
 export default function App(){
- const [cart,setCart]=useState<CartLine[]>([]);\n const [storageLoaded,setStorageLoaded]=useState(false);
+ const [cart,setCart]=useState<CartLine[]>([]);
+ const [storageLoaded,setStorageLoaded]=useState(false);
  const [saved,setSaved]=useState<number[]>([]);
  const [cartOpen,setCartOpen]=useState(false);
  const [searchOpen,setSearchOpen]=useState(false);
