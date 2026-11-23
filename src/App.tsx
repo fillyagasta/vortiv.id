@@ -4,8 +4,6 @@ import AdminDashboard from './components/AdminDashboard';
 import { supabase } from './lib/supabase';
 import type { Product, CartLine } from './types';
 
-type Product = { id:string; name:string; price:number; category:string; colors:string[]; image:string; description:string; tag?:string | null };
-type CartLine = { productId:string; color:string; quantity:number };
 const seedProducts:Product[] = [
   {id:'sample-1',name:'VORTEX TEE',price:49,category:'T-Shirts',colors:['White','Black'],image:'https://images.pexels.com/photos/37305162/pexels-photo-37305162.jpeg?auto=compress&cs=tinysrgb&w=700',description:'Everyday essential with a relaxed streetwear fit.',tag:'NEW'},
   {id:'sample-2',name:'MOTION TEE',price:49,category:'T-Shirts',colors:['White','Black'],image:'https://images.pexels.com/photos/33671485/pexels-photo-33671485.jpeg?auto=compress&cs=tinysrgb&w=700',description:'Made for movement. Minimal look, easy to style.'},
