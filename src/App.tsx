@@ -61,7 +61,7 @@ export default function App(){
  useEffect(()=>{if(storageLoaded)localStorage.setItem('vortiv-cart',JSON.stringify(cart))},[cart,storageLoaded]);
  useEffect(()=>{if(storageLoaded)localStorage.setItem('vortiv-wishlist',JSON.stringify(saved))},[saved,storageLoaded]);
  useEffect(()=>{if(accountEmail)localStorage.setItem('vortiv-profile',accountEmail)},[accountEmail]);
- useEffect(()=>{localStorage.setItem('vortiv-currency',currency)},[currency]);
+ useEffect(()=>{if(storageLoaded)localStorage.setItem('vortiv-currency',currency)},[currency,storageLoaded]);
  useEffect(()=>{fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=IDR').then(r=>r.json()).then(d=>{if(d.rates?.IDR){setRate(d.rates.IDR);setRateDate(d.date||'live')}}).catch(()=>setRateDate('fallback'))},[]);
  useEffect(()=>{if(!supabase)return;supabase.from('products').select('*').eq('active',true).order('created_at',{ascending:false}).then(({data,error})=>{if(!error&&data)setProducts(data as Product[])})},[]);
  const count=cart.reduce((s,l)=>s+l.quantity,0);
