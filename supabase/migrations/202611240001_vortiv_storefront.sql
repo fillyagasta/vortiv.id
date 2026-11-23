@@ -29,7 +29,7 @@ create table if not exists public.products (
 );
 
 create index if not exists products_active_category_idx on public.products(active, category);
-create index if not exists products_created_at_idx on public.products(created_at desc);
+create index if not exists products_created_at_idx on public.products(created_at desc);\n\ngrant select on public.products, public.categories to anon, authenticated;\ngrant insert, update, delete on public.products, public.categories to authenticated;
 
 create or replace function public.set_updated_at()
 returns trigger language plpgsql as $$
