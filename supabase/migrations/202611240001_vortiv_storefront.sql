@@ -85,4 +85,4 @@ with check (bucket_id = 'product-images' and (auth.jwt()->'app_metadata'->>'role
 drop policy if exists "Admin delete product images" on storage.objects;
 create policy "Admin delete product images" on storage.objects
 for delete to authenticated
-using (bucket_id = 'product-images' and (auth.jwt()->'app_metadata'->>'role') = 'admin';
+using (bucket_id = 'product-images' and (auth.jwt()->'app_metadata'->>'role') = 'admin');
