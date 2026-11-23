@@ -1,394 +1,92 @@
-import { useState } from 'react';
-import { ShoppingCart, Search, Instagram, Youtube, ArrowRight, Globe, Shield, RefreshCw, CreditCard, ChevronRight } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { ShoppingCart, Search, Instagram, Youtube, ArrowRight, Globe, Shield, RefreshCw, CreditCard, ChevronRight, X, Menu, Plus, Minus, Trash2, Heart, User, Copy } from 'lucide-react';
 
-const newArrivals = [
-  {
-    id: 1,
-    name: 'VORTEX TEE',
-    price: '$49.00',
-    colors: ['white', 'black'],
-    image: 'https://images.pexels.com/photos/8532616/pexels-photo-8532616.jpeg?auto=compress&cs=tinysrgb&w=400',
-  },
-  {
-    id: 2,
-    name: 'MOTION TEE',
-    price: '$49.00',
-    colors: ['white', 'black'],
-    image: 'https://images.pexels.com/photos/5868722/pexels-photo-5868722.jpeg?auto=compress&cs=tinysrgb&w=400',
-  },
-  {
-    id: 3,
-    name: 'ORBIT HOODIE',
-    price: '$89.00',
-    colors: ['white', 'black'],
-    image: 'https://images.pexels.com/photos/6311392/pexels-photo-6311392.jpeg?auto=compress&cs=tinysrgb&w=400',
-  },
-  {
-    id: 4,
-    name: 'CORE HOODIE',
-    price: '$89.00',
-    colors: ['white', 'black'],
-    image: 'https://images.pexels.com/photos/7679720/pexels-photo-7679720.jpeg?auto=compress&cs=tinysrgb&w=400',
-  },
+type Product = { id:number; name:string; price:number; category:'T-Shirts'|'Hoodies'; colors:string[]; image:string; description:string; tag?:string };
+type CartLine = { productId:number; color:string; quantity:number };
+const products:Product[] = [
+  {id:1,name:'VORTEX TEE',price:49,category:'T-Shirts',colors:['White','Black'],image:'https://images.pexels.com/photos/8532616/pexels-photo-8532616.jpeg?auto=compress&cs=tinysrgb&w=700',description:'Everyday essential with a relaxed streetwear fit.',tag:'NEW'},
+  {id:2,name:'MOTION TEE',price:49,category:'T-Shirts',colors:['White','Black'],image:'https://images.pexels.com/photos/5868722/pexels-photo-5868722.jpeg?auto=compress&cs=tinysrgb&w=700',description:'Made for movement. Minimal look, easy to style.'},
+  {id:3,name:'ORBIT HOODIE',price:89,category:'Hoodies',colors:['White','Black'],image:'https://images.pexels.com/photos/6311392/pexels-photo-6311392.jpeg?auto=compress&cs=tinysrgb&w=700',description:'A heavyweight layer for cooler days and late nights.',tag:'NEW'},
+  {id:4,name:'CORE HOODIE',price:89,category:'Hoodies',colors:['White','Black'],image:'https://images.pexels.com/photos/7679720/pexels-photo-7679720.jpeg?auto=compress&cs=tinysrgb&w=700',description:'A core piece with a relaxed silhouette.'},
+  {id:5,name:'GLOBAL TEE',price:49,category:'T-Shirts',colors:['White','Black'],image:'https://images.pexels.com/photos/5709661/pexels-photo-5709661.jpeg?auto=compress&cs=tinysrgb&w=700',description:'A versatile staple for your daily rotation.',tag:'BEST SELLER'},
+  {id:6,name:'SIGNATURE TEE',price:45,category:'T-Shirts',colors:['White','Black'],image:'https://images.pexels.com/photos/5709665/pexels-photo-5709665.jpeg?auto=compress&cs=tinysrgb&w=700',description:'A signature fit that goes with everything.',tag:'BEST SELLER'},
+  {id:7,name:'STAR HOODIE',price:89,category:'Hoodies',colors:['White','Black'],image:'https://images.pexels.com/photos/6311387/pexels-photo-6311387.jpeg?auto=compress&cs=tinysrgb&w=700',description:'A standout layer with an everyday fit.',tag:'BEST SELLER'},
+  {id:8,name:'NULL TEE',price:49,category:'T-Shirts',colors:['White','Black'],image:'https://images.pexels.com/photos/8532614/pexels-photo-8532614.jpeg?auto=compress&cs=tinysrgb&w=700',description:'A minimal blank canvas for your outfit.'},
 ];
-
-const bestSellers = [
-  {
-    id: 5,
-    name: 'GLOBAL TEE',
-    price: '$49.00',
-    colors: ['white', 'black'],
-    image: 'https://images.pexels.com/photos/5709661/pexels-photo-5709661.jpeg?auto=compress&cs=tinysrgb&w=400',
-  },
-  {
-    id: 6,
-    name: 'SIGNATURE TEE',
-    price: '$45.00',
-    colors: ['white', 'black'],
-    image: 'https://images.pexels.com/photos/5709665/pexels-photo-5709665.jpeg?auto=compress&cs=tinysrgb&w=400',
-  },
-  {
-    id: 7,
-    name: 'STAR HOODIE',
-    price: '$89.00',
-    colors: ['white', 'black'],
-    image: 'https://images.pexels.com/photos/6311387/pexels-photo-6311387.jpeg?auto=compress&cs=tinysrgb&w=400',
-  },
-  {
-    id: 8,
-    name: 'NULL TEE',
-    price: '$49.00',
-    colors: ['white', 'black'],
-    image: 'https://images.pexels.com/photos/8532614/pexels-photo-8532614.jpeg?auto=compress&cs=tinysrgb&w=400',
-  },
+const money=(n:number)=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n);
+// Provisional links: replace with Vortiv's confirmed official account URLs.
+const socials=[
+ {label:'Instagram',url:'https://instagram.com/vortiv.id',icon:<Instagram size={17}/>},
+ {label:'TikTok',url:'https://www.tiktok.com/@vortiv.id',icon:<TikTok/>},
+ {label:'X',url:'https://x.com/vortivid',icon:<XBrand/>},
+ {label:'YouTube',url:'https://youtube.com/@vortivid',icon:<Youtube size={17}/>},
 ];
+function TikTok(){return <svg viewBox="0 0 24 24" className="w-[17px] h-[17px]" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.25 8.25 0 0 0 4.83 1.56V6.79a4.85 4.85 0 0 1-1.06-.1z"/></svg>}
+function XBrand(){return <svg viewBox="0 0 24 24" className="w-[17px] h-[17px]" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>}
 
-function ProductCard({ product }: { product: typeof newArrivals[0] }) {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <div
-      className="group cursor-pointer"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <div className="relative overflow-hidden bg-[#111] aspect-square mb-3">
-        <img
-          src={product.image}
-          alt={product.name}
-          className={`w-full h-full object-cover transition-transform duration-700 ${hovered ? 'scale-105' : 'scale-100'}`}
-        />
-        <div className={`absolute inset-0 bg-black/40 flex items-end justify-center pb-4 transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'}`}>
-          <button className="bg-white text-black text-xs font-bold tracking-widest px-6 py-2 hover:bg-gray-200 transition-colors">
-            QUICK ADD
-          </button>
-        </div>
-      </div>
-      <div>
-        <p className="text-white text-xs font-bold tracking-widest mb-1">{product.name}</p>
-        <p className="text-gray-400 text-xs mb-2">{product.price}</p>
-        <div className="flex gap-1.5">
-          {product.colors.map((color) => (
-            <button
-              key={color}
-              className={`w-4 h-4 rounded-full border border-gray-600 ${color === 'white' ? 'bg-white' : 'bg-black border-gray-500'}`}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+function ProductCard({p,onAdd,onView,isSaved,onSave}:{p:Product;onAdd:(p:Product,c:string)=>void;onView:(p:Product)=>void;isSaved:boolean;onSave:(id:number)=>void}){
+ const [color,setColor]=useState(p.colors[0]);
+ return <article className="group">
+  <div className="relative aspect-[4/5] overflow-hidden bg-[#151515]">
+   <button onClick={()=>onView(p)} className="absolute inset-0 w-full h-full" aria-label={'View '+p.name}><img src={p.image} alt={p.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"/></button>
+   {p.tag&&<span className="absolute left-3 top-3 bg-white text-black px-2 py-1 text-[10px] font-bold tracking-widest">{p.tag}</span>}
+   <button onClick={()=>onSave(p.id)} aria-label="Wishlist" className="absolute right-3 top-3 bg-black/70 p-2 rounded-full"><Heart size={16} className={isSaved?'fill-white':'text-white'}/></button>
+   <button onClick={()=>onAdd(p,color)} className="absolute bottom-3 left-3 right-3 bg-white text-black py-3 text-xs font-bold tracking-widest opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">QUICK ADD · {color.toUpperCase()}</button>
+  </div>
+  <div className="pt-3 flex justify-between gap-3"><button onClick={()=>onView(p)} className="text-left"><p className="text-xs font-bold tracking-widest">{p.name}</p><p className="text-gray-400 text-xs mt-1">{money(p.price)}</p></button><div className="flex gap-1.5 pt-1">{p.colors.map(c=><button key={c} title={c} onClick={()=>setColor(c)} className={'w-4 h-4 rounded-full border '+(c==='White'?'bg-white border-gray-400':'bg-black border-gray-500')+(color===c?' ring-1 ring-white ring-offset-1 ring-offset-black':'')}/>)}</div></div>
+ </article>;
 }
 
-function TikTokIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.25 8.25 0 0 0 4.83 1.56V6.79a4.85 4.85 0 0 1-1.06-.1z" />
-    </svg>
-  );
-}
-
-function XIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  );
-}
-
-export default function App() {
-  const [cartCount] = useState(0);
-  const [email, setEmail] = useState('');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  return (
-    <div className="min-h-screen bg-black text-white font-sans">
-      {/* Announcement Bar */}
-      <div className="bg-white text-black text-center py-2 text-xs tracking-widest font-medium">
-        FREE SHIPPING ON ORDERS OVER $150 — USE CODE: VORTIV15 FOR 15% OFF
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex items-center justify-between px-6 md:px-10 py-4 border-b border-white/10 sticky top-0 z-50 bg-black">
-        <a href="#" className="text-white font-bold text-lg tracking-tight">vortiv.id</a>
-
-        {/* Desktop Nav Links */}
-        <div className="hidden md:flex items-center gap-8">
-          <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors tracking-wide">Shop</a>
-          <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors tracking-wide">New Arrivals</a>
-          <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors tracking-wide">Best Sellers</a>
-          <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors tracking-wide">About Us</a>
-        </div>
-
-        {/* Right Icons */}
-        <div className="flex items-center gap-5">
-          <button className="text-gray-300 hover:text-white transition-colors">
-            <Search size={18} />
-          </button>
-          <a href="#" className="hidden md:block text-sm text-gray-300 hover:text-white transition-colors tracking-wide">Account</a>
-          <button className="flex items-center gap-1.5 text-gray-300 hover:text-white transition-colors">
-            <ShoppingCart size={18} />
-            <span className="text-sm tracking-wide">Cart ({cartCount})</span>
-          </button>
-          <button
-            className="md:hidden text-gray-300 hover:text-white"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            <div className="w-5 flex flex-col gap-1">
-              <span className="block h-px bg-current"></span>
-              <span className="block h-px bg-current"></span>
-              <span className="block h-px bg-current"></span>
-            </div>
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-black border-b border-white/10 px-6 py-4 flex flex-col gap-4">
-          {['Shop', 'New Arrivals', 'Best Sellers', 'About Us', 'Account'].map((item) => (
-            <a key={item} href="#" className="text-sm text-gray-300 hover:text-white tracking-wide">{item}</a>
-          ))}
-        </div>
-      )}
-
-      {/* Hero Section */}
-      <section className="relative min-h-[90vh] bg-black overflow-hidden flex items-center">
-        <div className="absolute inset-0">
-          <img
-            src="https://images.pexels.com/photos/2220316/pexels-photo-2220316.jpeg?auto=compress&cs=tinysrgb&w=1600"
-            alt="Vortiv hero"
-            className="w-full h-full object-cover object-center opacity-80"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent" />
-        </div>
-        <div className="relative z-10 px-8 md:px-16 max-w-2xl">
-          <h1 className="text-6xl md:text-8xl font-black leading-none tracking-tight mb-6">
-            BUILT<br />DIFFERENT.
-          </h1>
-          <p className="text-gray-300 text-base md:text-lg mb-10 max-w-xs leading-relaxed">
-            Premium streetwear for those<br />who move different.
-          </p>
-          <a
-            href="#"
-            className="inline-flex items-center gap-3 bg-white text-black px-7 py-3 text-sm font-bold tracking-widest hover:bg-gray-200 transition-colors group"
-          >
-            SHOP NOW
-            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-          </a>
-        </div>
-      </section>
-
-      {/* As Seen In */}
-      <section className="border-b border-white/10 bg-black">
-        <div className="flex flex-wrap items-center gap-8 md:gap-16 px-8 md:px-16 py-6">
-          <span className="text-gray-500 text-xs tracking-widest uppercase">As seen in</span>
-          {['HIGHSNOBIETY', 'HYPEBEAST', 'COMPLEX', 'GQ', 'DAZED'].map((brand, i) => (
-            <span
-              key={brand}
-              className={`text-sm md:text-base font-bold tracking-widest ${i === 0 ? 'border-b border-white' : 'text-gray-400'} hover:text-white transition-colors cursor-pointer`}
-            >
-              {brand}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      {/* New Arrivals */}
-      <section className="px-6 md:px-10 py-14">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-black tracking-widest">NEW ARRIVALS</h2>
-          <a href="#" className="flex items-center gap-2 text-sm tracking-widest text-gray-400 hover:text-white transition-colors group">
-            VIEW ALL
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </a>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {newArrivals.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
-
-      {/* Limited Drop Banner */}
-      <section className="relative mx-6 md:mx-10 mb-14 overflow-hidden min-h-[420px] flex items-center">
-        <div className="absolute inset-0">
-          <img
-            src="https://images.pexels.com/photos/2220316/pexels-photo-2220316.jpeg?auto=compress&cs=tinysrgb&w=900"
-            alt="Limited drop"
-            className="w-full h-full object-cover grayscale"
-          />
-          <div className="absolute inset-0 bg-black/55" />
-        </div>
-        <div className="relative z-10 ml-auto mr-16 md:mr-24 text-right max-w-sm">
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4 leading-tight">LIMITED DROP</h2>
-          <p className="text-gray-300 text-sm mb-2">No restocks. No second chances.</p>
-          <p className="text-gray-300 text-sm mb-8">Grab it while it's live.</p>
-          <a
-            href="#"
-            className="inline-flex items-center gap-3 bg-white text-black px-7 py-3 text-sm font-bold tracking-widest hover:bg-gray-200 transition-colors group"
-          >
-            SHOP THE DROP
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </a>
-        </div>
-      </section>
-
-      {/* Best Sellers */}
-      <section className="px-6 md:px-10 py-4 pb-14">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-black tracking-widest">BEST SELLERS</h2>
-          <a href="#" className="flex items-center gap-2 text-sm tracking-widest text-gray-400 hover:text-white transition-colors group">
-            VIEW ALL
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </a>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {bestSellers.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
-
-      {/* Features Strip */}
-      <section className="border-t border-white/10 bg-black px-6 md:px-10 py-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[
-            { icon: <Globe size={22} />, title: 'WORLDWIDE SHIPPING', sub: 'Fast & secure delivery' },
-            { icon: <Shield size={22} />, title: 'PREMIUM QUALITY', sub: 'Built to last' },
-            { icon: <RefreshCw size={22} />, title: 'EASY RETURNS', sub: '14-day return policy' },
-            { icon: <CreditCard size={22} />, title: 'SECURE PAYMENTS', sub: 'PayPal & more' },
-          ].map((feat) => (
-            <div key={feat.title} className="flex items-start gap-3">
-              <div className="text-gray-400 mt-0.5 shrink-0">{feat.icon}</div>
-              <div>
-                <p className="text-xs font-bold tracking-widest text-white mb-0.5">{feat.title}</p>
-                <p className="text-xs text-gray-500">{feat.sub}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/10 bg-black px-6 md:px-10 pt-12 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-12">
-          {/* Brand */}
-          <div className="md:col-span-1">
-            <a href="#" className="text-white font-bold text-lg tracking-tight mb-3 block">vortiv.id</a>
-            <p className="text-gray-500 text-xs leading-relaxed mb-6">
-              Premium streetwear brand<br />from the underground.
-            </p>
-            <div className="flex items-center gap-4">
-              {[
-                { icon: <Instagram size={16} />, label: 'instagram' },
-                { icon: <TikTokIcon />, label: 'tiktok' },
-                { icon: <XIcon />, label: 'x' },
-                { icon: <Youtube size={16} />, label: 'youtube' },
-              ].map((social) => (
-                <a
-                  key={social.label}
-                  href="#"
-                  aria-label={social.label}
-                  className="text-gray-500 hover:text-white transition-colors"
-                >
-                  {social.icon}
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Shop */}
-          <div>
-            <p className="text-xs font-bold tracking-widest text-white mb-4">SHOP</p>
-            <ul className="space-y-2.5">
-              {['All Products', 'T-Shirts', 'Hoodies', 'Accessories'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-xs text-gray-500 hover:text-white transition-colors">{item}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Help */}
-          <div>
-            <p className="text-xs font-bold tracking-widest text-white mb-4">HELP</p>
-            <ul className="space-y-2.5">
-              {['Shipping', 'Returns', 'FAQs', 'Size Guide'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-xs text-gray-500 hover:text-white transition-colors">{item}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <p className="text-xs font-bold tracking-widest text-white mb-4">COMPANY</p>
-            <ul className="space-y-2.5">
-              {['About Us', 'Contact', 'Privacy Policy', 'Terms of Service'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-xs text-gray-500 hover:text-white transition-colors">{item}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Newsletter */}
-          <div>
-            <p className="text-xs font-bold tracking-widest text-white mb-4">NEWSLETTER</p>
-            <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-              Get early access to new drops and exclusive offers.
-            </p>
-            <form className="flex" onSubmit={(e) => e.preventDefault()}>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 bg-[#111] border border-white/20 text-white text-xs px-3 py-2.5 placeholder-gray-600 focus:outline-none focus:border-white/50 transition-colors"
-              />
-              <button
-                type="submit"
-                className="bg-white text-black px-3 py-2.5 hover:bg-gray-200 transition-colors"
-              >
-                <ChevronRight size={14} />
-              </button>
-            </form>
-          </div>
-        </div>
-
-        {/* Footer Bottom */}
-        <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gray-600">© 2025 vortiv.id — All rights reserved.</p>
-          <div className="flex items-center gap-3">
-            {/* Payment Icons */}
-            {['PayPal', 'VISA', 'MC', 'Apple Pay'].map((pay) => (
-              <span key={pay} className="text-xs text-gray-600 border border-gray-700 px-2 py-0.5 rounded-sm">{pay}</span>
-            ))}
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
+export default function App(){
+ const [cart,setCart]=useState<CartLine[]>([]);
+ const [saved,setSaved]=useState<number[]>([]);
+ const [cartOpen,setCartOpen]=useState(false);
+ const [searchOpen,setSearchOpen]=useState(false);
+ const [search,setSearch]=useState('');
+ const [category,setCategory]=useState('All');
+ const [selected,setSelected]=useState<Product|null>(null);
+ const [selectedColor,setSelectedColor]=useState('White');
+ const [menuOpen,setMenuOpen]=useState(false);
+ const [accountOpen,setAccountOpen]=useState(false);
+ const [accountEmail,setAccountEmail]=useState('');
+ const [email,setEmail]=useState('');
+ const [newsletterMsg,setNewsletterMsg]=useState('');
+ const [toast,setToast]=useState('');
+ useEffect(()=>{try{setCart(JSON.parse(localStorage.getItem('vortiv-cart')||'[]'));setSaved(JSON.parse(localStorage.getItem('vortiv-wishlist')||'[]'));setAccountEmail(localStorage.getItem('vortiv-profile')||'')}catch{}},[]);
+ useEffect(()=>{localStorage.setItem('vortiv-cart',JSON.stringify(cart))},[cart]);
+ useEffect(()=>{localStorage.setItem('vortiv-wishlist',JSON.stringify(saved))},[saved]);
+ useEffect(()=>{if(accountEmail)localStorage.setItem('vortiv-profile',accountEmail)},[accountEmail]);
+ const count=cart.reduce((s,l)=>s+l.quantity,0);
+ const subtotal=cart.reduce((s,l)=>s+(products.find(p=>p.id===l.productId)?.price||0)*l.quantity,0);
+ const visible=useMemo(()=>products.filter(p=>(category==='All'||p.category===category)&&(!search||p.name.toLowerCase().includes(search.toLowerCase())||p.category.toLowerCase().includes(search.toLowerCase()))),[category,search]);
+ function notify(t:string){setToast(t);window.setTimeout(()=>setToast(''),2600)}
+ function add(p:Product,c:string){setCart(prev=>{const found=prev.find(l=>l.productId===p.id&&l.color===c);return found?prev.map(l=>l.productId===p.id&&l.color===c?{...l,quantity:l.quantity+1}:l):[...prev,{productId:p.id,color:c,quantity:1}]});notify(p.name+' added to cart')}
+ function qty(id:number,c:string,d:number){setCart(prev=>prev.map(l=>l.productId===id&&l.color===c?{...l,quantity:l.quantity+d}:l).filter(l=>l.quantity>0))}
+ function toggleSave(id:number){setSaved(prev=>prev.includes(id)?prev.filter(x=>x!==id):[...prev,id]);notify(saved.includes(id)?'Removed from wishlist':'Saved to wishlist')}
+ function go(id:string){setMenuOpen(false);document.getElementById(id)?.scrollIntoView({behavior:'smooth'})}
+ function orderText(){return ['VORTIV.ID ORDER',...cart.map(l=>{const p=products.find(x=>x.id===l.productId)!;return l.quantity+' × '+p.name+' / '+l.color+' — '+money(p.price*l.quantity)}),'Subtotal: '+money(subtotal),'Shipping and payment to be confirmed.'].join('\n')}
+ async function copyOrder(){try{await navigator.clipboard.writeText(orderText());notify('Order summary copied')}catch{notify('Clipboard unavailable. Please copy order details manually.')}}
+ return <div className="min-h-screen bg-black text-white font-sans">
+  <div className="bg-white text-black text-center py-2 px-3 text-[10px] sm:text-xs tracking-widest font-medium">FREE SHIPPING ON ORDERS OVER $150 — USE CODE: VORTIV15 FOR 15% OFF</div>
+  <nav className="sticky top-0 z-40 bg-black/95 backdrop-blur border-b border-white/10 flex justify-between items-center px-5 md:px-10 py-4">
+   <a href="#top" className="font-bold text-lg tracking-tight">vortiv.id</a>
+   <div className="hidden md:flex gap-7 text-sm text-gray-300"><button onClick={()=>go('shop')}>Shop</button><button onClick={()=>go('new-arrivals')}>New Arrivals</button><button onClick={()=>go('best-sellers')}>Best Sellers</button><button onClick={()=>go('about')}>About Us</button></div>
+   <div className="flex items-center gap-4"><button onClick={()=>{setSearchOpen(true);setSearch('')}} aria-label="Search"><Search size={18}/></button><button onClick={()=>setAccountOpen(true)} className="hidden md:flex items-center gap-1 text-sm"><User size={16}/> Account</button><button onClick={()=>setCartOpen(true)} className="flex gap-1 items-center text-sm"><ShoppingCart size={18}/> Cart ({count})</button><button className="md:hidden" onClick={()=>setMenuOpen(v=>!v)} aria-label="Menu">{menuOpen?<X/>:<Menu/>}</button></div>
+  </nav>
+  {menuOpen&&<div className="md:hidden px-5 py-4 border-b border-white/10 flex flex-col gap-4">{[['Shop','shop'],['New Arrivals','new-arrivals'],['Best Sellers','best-sellers'],['About Us','about']].map(([t,id])=><button key={id} onClick={()=>go(id)} className="text-left text-gray-300">{t}</button>)}<button onClick={()=>{setMenuOpen(false);setAccountOpen(true)}} className="text-left text-gray-300">Account</button></div>}
+  <section id="top" className="relative min-h-[76vh] md:min-h-[88vh] flex items-center overflow-hidden"><img src="https://images.pexels.com/photos/2220316/pexels-photo-2220316.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Streetwear campaign" className="absolute inset-0 w-full h-full object-cover opacity-70"/><div className="absolute inset-0 bg-gradient-to-r from-black via-black/65 to-transparent"/><div className="relative z-10 px-7 md:px-16 max-w-3xl"><p className="text-xs tracking-[0.35em] text-gray-300 mb-5">VORTIV.ID · STREETWEAR</p><h1 className="text-6xl md:text-8xl font-black leading-none tracking-tight mb-6">BUILT<br/>DIFFERENT.</h1><p className="text-gray-300 mb-9 max-w-xs">Premium streetwear for those who move different.</p><button onClick={()=>go('shop')} className="bg-white text-black px-7 py-3 text-sm font-bold tracking-widest inline-flex items-center gap-3">SHOP NOW <ArrowRight size={16}/></button></div></section>
+  <section className="border-b border-white/10 px-6 md:px-16 py-6 flex flex-wrap items-center gap-6 md:gap-14"><span className="text-gray-500 text-xs tracking-widest uppercase">Inspired by</span>{['HIGHSNOBIETY','HYPEBEAST','COMPLEX','GQ','DAZED'].map(x=><span key={x} className="text-sm font-bold tracking-widest text-gray-400">{x}</span>)}</section>
+  <section id="shop" className="px-5 md:px-10 py-14 scroll-mt-20"><div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-8"><div><p className="text-gray-500 text-xs tracking-widest mb-2">THE COLLECTION</p><h2 className="text-2xl md:text-3xl font-black tracking-widest">SHOP ALL</h2></div><div className="flex gap-2">{['All','T-Shirts','Hoodies'].map(c=><button key={c} onClick={()=>setCategory(c)} className={'border px-4 py-2 text-xs tracking-widest '+(category===c?'bg-white text-black border-white':'border-white/20 text-gray-300')}>{c.toUpperCase()}</button>)}</div></div><div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">{visible.map(p=><ProductCard key={p.id} p={p} onAdd={add} onView={p=>{setSelected(p);setSelectedColor(p.colors[0]')}} isSaved={saved.includes(p.id)} onSave={toggleSave}/>)}</div>{visible.length===0&&<p className="py-12 text-center text-gray-500">No matching products.</p>}</section>
+  <section className="relative mx-5 md:mx-10 mb-14 min-h-[360px] md:min-h-[460px] flex items-center overflow-hidden"><img src="https://images.pexels.com/photos/2220316/pexels-photo-2220316.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="Limited drop campaign" className="absolute inset-0 w-full h-full object-cover grayscale"/><div className="absolute inset-0 bg-black/60"/><div className="relative z-10 ml-auto mr-7 md:mr-20 text-right max-w-sm"><h2 className="text-4xl md:text-5xl font-black mb-4">LIMITED DROP</h2><p className="text-gray-300 text-sm mb-2">No restocks. No second chances.</p><p className="text-gray-300 text-sm mb-7">Grab it while it's live.</p><button onClick={()=>go('shop')} className="bg-white text-black px-7 py-3 text-sm font-bold tracking-widest inline-flex items-center gap-3">SHOP THE DROP <ArrowRight size={14}/></button></div></section>
+  <section id="new-arrivals" className="px-5 md:px-10 py-4 pb-14 scroll-mt-20"><div className="flex justify-between items-center mb-8"><h2 className="text-2xl font-black tracking-widest">NEW ARRIVALS</h2><button onClick={()=>{setCategory('All');go('shop')}} className="text-sm tracking-widest text-gray-400">VIEW ALL <ArrowRight size={14} className="inline"/></button></div><div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">{products.filter(p=>p.tag==='NEW').map(p=><ProductCard key={p.id} p={p} onAdd={add} onView={p=>{setSelected(p);setSelectedColor(p.colors[0])}} isSaved={saved.includes(p.id)} onSave={toggleSave}/>)}</div></section>
+  <section id="best-sellers" className="px-5 md:px-10 py-4 pb-14 scroll-mt-20"><div className="flex justify-between items-center mb-8"><h2 className="text-2xl font-black tracking-widest">BEST SELLERS</h2><button onClick={()=>go('shop')} className="text-sm tracking-widest text-gray-400">VIEW ALL <ArrowRight size={14} className="inline"/></button></div><div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">{products.filter(p=>p.tag==='BEST SELLER').map(p=><ProductCard key={p.id} p={p} onAdd={add} onView={p=>{setSelected(p);setSelectedColor(p.colors[0])}} isSaved={saved.includes(p.id)} onSave={toggleSave}/>)}</div></section>
+  <section id="about" className="border-y border-white/10 px-6 md:px-10 py-12 scroll-mt-20"><div className="max-w-3xl"><p className="text-xs tracking-[0.3em] text-gray-500 mb-3">OUR APPROACH</p><h2 className="text-3xl md:text-5xl font-black mb-5">MOVE DIFFERENT.</h2><p className="text-gray-400 leading-7">Vortiv is built around everyday streetwear—clean essentials, versatile silhouettes, and pieces made to be part of your own uniform. Wear it your way.</p></div></section>
+  <section className="px-6 md:px-10 py-9 border-b border-white/10"><div className="grid grid-cols-2 md:grid-cols-4 gap-6">{[{icon:<Globe size={22}/>,title:'SHIPPING',sub:'Delivery options confirmed with seller'},{icon:<Shield size={22}/>,title:'QUALITY',sub:'Everyday essentials'},{icon:<RefreshCw size={22}/>,title:'RETURNS',sub:'Return terms to be confirmed'},{icon:<CreditCard size={22}/>,title:'PAYMENTS',sub:'Payment method confirmed before order'}].map(f=><div key={f.title} className="flex gap-3"><div className="text-gray-400">{f.icon}</div><div><p className="text-xs font-bold tracking-widest mb-1">{f.title}</p><p className="text-xs text-gray-500">{f.sub}</p></div></div>)}</section>
+  <footer className="px-6 md:px-10 pt-12 pb-8"><div className="grid grid-cols-1 md:grid-cols-5 gap-9 mb-12"><div><a href="#top" className="font-bold text-lg block mb-3">vortiv.id</a><p className="text-gray-500 text-xs leading-relaxed mb-5">Premium streetwear for those who move different.</p><div className="flex gap-4">{socials.map(s=><a key={s.label} href={s.url} target="_blank" rel="noreferrer" aria-label={s.label} title={s.label} className="text-gray-500 hover:text-white">{s.icon}</a>)}</div><p className="text-[10px] text-gray-600 mt-3">Social links need confirmation of official handles.</p></div><div><p className="text-xs font-bold tracking-widest mb-4">SHOP</p>{['All Products','T-Shirts','Hoodies','New Arrivals','Best Sellers'].map((t,i)=><button key={t} onClick={()=>{setCategory(i===1?'T-Shirts':i===2?'Hoodies':'All');go(i===3?'new-arrivals':i===4?'best-sellers':'shop')}} className="block text-xs text-gray-500 hover:text-white mb-3">{t}</button>)}</div><div><p className="text-xs font-bold tracking-widest mb-4">HELP</p>{['Shipping','Returns','FAQs','Size Guide'].map(t=><button key={t} onClick={()=>notify(t+' details need to be added')} className="block text-xs text-gray-500 hover:text-white mb-3">{t}</button>)}</div><div><p className="text-xs font-bold tracking-widest mb-4">COMPANY</p>{['About Us','Contact','Privacy Policy','Terms of Service'].map(t=><button key={t} onClick={()=>t==='About Us'?go('about'):notify(t+' page is not set up yet')} className="block text-xs text-gray-500 hover:text-white mb-3">{t}</button>)}</div><div><p className="text-xs font-bold tracking-widest mb-4">NEWSLETTER</p><p className="text-xs text-gray-500 mb-4">Get early access to new drops and updates.</p><form onSubmit={e=>{e.preventDefault();setNewsletterMsg('Thanks! Signup is not connected yet—your email was not sent.');setEmail('')}} className="flex"><input type="email" required placeholder="Your email address" value={email} onChange={e=>setEmail(e.target.value)} className="min-w-0 flex-1 bg-[#111] border border-white/20 text-white text-xs px-3 py-2.5"/><button className="bg-white text-black px-3" aria-label="Subscribe"><ChevronRight size={15}/></button></form>{newsletterMsg&&<p className="text-xs text-gray-400 mt-2">{newsletterMsg}</p>}</div></div><div className="border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4"><p className="text-xs text-gray-600">© {new Date().getFullYear()} vortiv.id — All rights reserved.</p><div className="flex gap-2">{['PayPal','VISA','MC','Apple Pay'].map(p=><span key={p} className="text-[10px] text-gray-600 border border-gray-700 px-2 py-1">{p}</span>)}</div></div></footer>
+  {searchOpen&&<div className="fixed inset-0 z-[70] bg-black/95 p-5 md:p-10 overflow-y-auto"><div className="max-w-3xl mx-auto"><div className="flex justify-between mb-8"><h2 className="tracking-widest">SEARCH VORTIV</h2><button onClick={()=>setSearchOpen(false)}><X/></button></div><div className="flex gap-3 border-b border-white/30 pb-4"><Search/><input autoFocus value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search products..." className="bg-transparent outline-none flex-1 text-xl md:text-3xl"/><button onClick={()=>setSearch('')} className="text-xs text-gray-500">CLEAR</button></div><div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">{visible.map(p=><button key={p.id} className="text-left" onClick={()=>{setSelected(p);setSelectedColor(p.colors[0]);setSearchOpen(false)}}><img src={p.image} alt={p.name} className="aspect-[4/5] object-cover w-full"/><p className="text-xs font-bold mt-3">{p.name}</p><p className="text-gray-400 text-xs mt-1">{money(p.price)}</p></button>)}</div>{!visible.length&&<p className="text-gray-500 mt-8">No results found.</p>}</div></div>}
+  {selected&&<div className="fixed inset-0 z-[70] bg-black/80 flex justify-end" onClick={()=>setSelected(null)}><div className="bg-[#101010] w-full max-w-2xl h-full overflow-y-auto" onClick={e=>e.stopPropagation()}><div className="flex justify-end p-4"><button onClick={()=>setSelected(null)}><X/></button></div><div className="grid md:grid-cols-2 gap-5 p-5"><img src={selected.image} alt={selected.name} className="w-full aspect-[4/5] object-cover"/><div className="pt-2"><p className="text-xs text-gray-500 tracking-widest">{selected.category}</p><h2 className="text-2xl font-black tracking-widest mt-2">{selected.name}</h2><p className="mt-3">{money(selected.price)}</p><p className="text-gray-400 text-sm leading-6 mt-5">{selected.description}</p><p className="text-xs tracking-widest mt-7 mb-3">COLOR</p><div className="flex gap-2 mb-7">{selected.colors.map(c=><button key={c} onClick={()=>setSelectedColor(c)} className={'border px-4 py-2 text-xs '+(selectedColor===c?'border-white':'border-white/30')}>{c}</button>)}</div><button onClick={()=>add(selected,selectedColor)} className="w-full bg-white text-black py-3 font-bold tracking-widest">ADD TO CART</button><button onClick={()=>toggleSave(selected.id)} className="w-full border border-white/20 py-3 mt-3 text-xs tracking-widest flex justify-center gap-2"><Heart size={15}/> SAVE TO WISHLIST</button><p className="text-xs text-gray-500 mt-5">Shipping and payment will be confirmed with seller.</p></div></div></div></div>}
+  {cartOpen&&<div className="fixed inset-0 z-[70] bg-black/70 flex justify-end" onClick={()=>setCartOpen(false)}><aside className="w-full max-w-md bg-[#0b0b0b] h-full overflow-y-auto p-5" onClick={e=>e.stopPropagation()}><div className="flex justify-between border-b border-white/10 pb-5"><h2 className="font-bold tracking-widest">YOUR CART ({count})</h2><button onClick={()=>setCartOpen(false)}><X/></button></div>{!cart.length?<div className="py-16 text-center"><ShoppingCart className="mx-auto text-gray-500 mb-4"/><p className="text-gray-400 mb-5">Your cart is empty.</p><button onClick={()=>{setCartOpen(false);go('shop')}} className="bg-white text-black px-5 py-3 text-xs font-bold tracking-widest">START SHOPPING</button></div>:<><div className="py-5 space-y-5">{cart.map(l=>{const p=products.find(x=>x.id===l.productId)!;return <div key={l.productId+l.color} className="flex gap-4"><img src={p.image} alt={p.name} className="w-24 h-28 object-cover"/><div className="flex-1"><div className="flex justify-between gap-2"><div><p className="text-xs font-bold tracking-widest">{p.name}</p><p className="text-xs text-gray-500 mt-1">Color: {l.color}</p></div><p className="text-xs">{money(p.price*l.quantity)}</p></div><div className="flex items-center gap-3 mt-4"><button onClick={()=>qty(l.productId,l.color,-1)} className="border border-white/20 p-1"><Minus size={13}/></button><span className="text-xs">{l.quantity}</span><button onClick={()=>qty(l.productId,l.color,1)} className="border border-white/20 p-1"><Plus size={13}/></button><button onClick={()=>setCart(prev=>prev.filter(x=>x.productId!==l.productId||x.color!==l.color))} className="ml-auto text-gray-500"><Trash2 size={15}/></button></div></div></div>})}</div><div className="border-t border-white/10 pt-5"><div className="flex justify-between mb-2"><span>Subtotal</span><span>{money(subtotal)}</span></div><p className="text-xs text-gray-500 mb-5">Shipping, discount, payment and checkout are not integrated yet.</p><button onClick={copyOrder} className="w-full border border-white py-3 text-xs font-bold tracking-widest flex justify-center gap-2"><Copy size={15}/> COPY ORDER SUMMARY</button><button onClick={()=>notify('Checkout/payment integration needs seller details and a payment provider.')} className="w-full bg-white text-black py-3 mt-3 text-xs font-bold tracking-widest">CHECKOUT (NOT CONNECTED)</button></div></>}</aside></div>}
+  {accountOpen&&<div className="fixed inset-0 z-[70] bg-black/80 flex items-center justify-center p-5" onClick={()=>setAccountOpen(false)}><div className="bg-[#111] border border-white/10 w-full max-w-sm p-6" onClick={e=>e.stopPropagation()}><div className="flex justify-between mb-6"><h2 className="font-bold tracking-widest">ACCOUNT</h2><button onClick={()=>setAccountOpen(false)}><X/></button></div>{accountEmail?<><p className="text-gray-400 text-sm">Local profile</p><p className="mt-2">{accountEmail}</p><p className="text-xs text-gray-500 mt-4">This profile is saved on this device only; no secure account system is connected.</p><button onClick={()=>{setAccountEmail('');localStorage.removeItem('vortiv-profile')}} className="border border-white/20 w-full py-3 mt-5 text-xs tracking-widest">SIGN OUT</button></>:<form onSubmit={e=>{e.preventDefault();setAccountEmail((e.currentTarget.elements.namedItem('accountEmail') as HTMLInputElement).value);setAccountOpen(false);notify('Local profile saved')}}><p className="text-sm text-gray-400 mb-5">Save a simple profile on this device.</p><label className="text-xs text-gray-500">EMAIL</label><input name="accountEmail" type="email" required placeholder="you@email.com" className="w-full mt-2 bg-black border border-white/20 p-3 text-sm"/><button className="w-full bg-white text-black py-3 mt-4 text-xs font-bold tracking-widest">CONTINUE</button></form>}</div></div>}
+  {toast&&<div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[90] bg-white text-black px-5 py-3 text-xs font-medium shadow-lg">{toast}</div>}
+ </div>;
 }
