@@ -24,7 +24,7 @@ The same values can be placed in a local `.env` file for development. `.env` is 
    where email = 'YOUR_ADMIN_EMAIL';
    ```
 
-   Do **not** set the role in user metadata; the database policies trust app metadata only.
+   Do **not** set the role in user metadata; the database policies trust app metadata only. Use a unique, strong admin password and enable MFA in Supabase Auth for the admin account. MFA enforcement in the app/RLS is not yet configured.
 5. Add the two GitHub Actions secrets above, then rerun the Pages workflow.
 6. Open the website footer's **Admin** link and sign in with the admin account.
 
@@ -35,7 +35,7 @@ The same values can be placed in a local `.env` file for development. `.env` is 
 - Upload product photos to the public `product-images` bucket (JPEG, PNG, WebP; max 5 MB)
 - Product rows and storage uploads are protected by Supabase RLS policies
 
-## Currency
+## Stock photo note\n\nThe initial lifestyle photos use Pexels stock imagery of streetwear models photographed in Bandung. Replace these with Vortiv's own product/model photos when available.\n\n## Currency
 
 The storefront supports USD and IDR. The conversion rate is fetched from Frankfurter's public endpoint. A fallback approximate rate is used if the endpoint is unavailable.
 
