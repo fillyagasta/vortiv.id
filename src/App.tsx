@@ -72,7 +72,7 @@ export default function App(){
  function qty(id:number,c:string,d:number){setCart(prev=>prev.map(l=>l.productId===id&&l.color===c?{...l,quantity:l.quantity+d}:l).filter(l=>l.quantity>0))}
  function toggleSave(id:number){setSaved(prev=>prev.includes(id)?prev.filter(x=>x!==id):[...prev,id]);notify(saved.includes(id)?'Removed from wishlist':'Saved to wishlist')}
  function go(id:string){setMenuOpen(false);document.getElementById(id)?.scrollIntoView({behavior:'smooth'})}
- function orderText(){return ['VORTIV.ID ORDER',...cart.map(l=>{const p=products.find(x=>x.id===l.productId)!;return l.quantity+' × '+p.name+' / '+l.color+' — '+money(p.price*l.quantity)}),'Subtotal: '+money(subtotal),'Shipping and payment to be confirmed.'].join('\n')}
+ function orderText(){return ['VORTIV.ID ORDER',...cart.map(l=>{const p=products.find(x=>x.id===l.productId)!;return l.quantity+' × '+p.name+' / '+l.color+' — '+priceText(p.price*l.quantity)}),'Subtotal: '+priceText(subtotal),'Shipping and payment to be confirmed.'].join('\n')}
  async function copyOrder(){try{await navigator.clipboard.writeText(orderText());notify('Order summary copied')}catch{notify('Clipboard unavailable. Please copy order details manually.')}}
  return <div className="min-h-screen bg-black text-white font-sans">
   <div className="bg-white text-black text-center py-2 px-3 text-[10px] sm:text-xs tracking-widest font-medium">FREE SHIPPING ON ORDERS OVER $150 — USE CODE: VORTIV15 FOR 15% OFF</div>
